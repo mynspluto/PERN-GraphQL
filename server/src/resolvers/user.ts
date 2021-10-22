@@ -13,7 +13,7 @@ class UsernamePasswordInput {
 }
 
 @ObjectType()
-class FiledError {
+class FieldError {
   @Field()
   field: string;
 
@@ -23,8 +23,8 @@ class FiledError {
 
 @ObjectType()
 class UserResponse {
-  @Field(() => [FiledError], { nullable: true})
-  errors?: FiledError[];
+  @Field(() => [FieldError], { nullable: true})
+  errors?: FieldError[];
 
   @Field(() => User, { nullable: true })
   user?: User;
@@ -32,6 +32,12 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+
+  @Query(() => [User])
+  users(@Ctx() { em } : MyContext): Promise<User[]> { 
+     
+    return em.find(User, {}); 
+  }
 
   @Query(() => User, { nullable: true})
   async me(@Ctx() { req, em }: MyContext) {
@@ -41,7 +47,7 @@ export class UserResolver {
 
     const user = await em.findOne(User, { id: req.session.userId });
     return user;
-  }
+  } 
 
   @Mutation(() => UserResponse)
   async register(
@@ -86,9 +92,9 @@ export class UserResolver {
         }
       }
     }
-
-    req.session.userId = user.id
     
+    req.session.userId = user.id
+    console.log('req.session' + JSON.stringify(req.session))
     return { user };
   }
 

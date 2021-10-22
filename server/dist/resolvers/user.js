@@ -41,23 +41,23 @@ __decorate([
 UsernamePasswordInput = __decorate([
     type_graphql_1.InputType()
 ], UsernamePasswordInput);
-let FiledError = class FiledError {
+let FieldError = class FieldError {
 };
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], FiledError.prototype, "field", void 0);
+], FieldError.prototype, "field", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], FiledError.prototype, "message", void 0);
-FiledError = __decorate([
+], FieldError.prototype, "message", void 0);
+FieldError = __decorate([
     type_graphql_1.ObjectType()
-], FiledError);
+], FieldError);
 let UserResponse = class UserResponse {
 };
 __decorate([
-    type_graphql_1.Field(() => [FiledError], { nullable: true }),
+    type_graphql_1.Field(() => [FieldError], { nullable: true }),
     __metadata("design:type", Array)
 ], UserResponse.prototype, "errors", void 0);
 __decorate([
@@ -68,6 +68,9 @@ UserResponse = __decorate([
     type_graphql_1.ObjectType()
 ], UserResponse);
 let UserResolver = class UserResolver {
+    users({ em }) {
+        return em.find(User_1.User, {});
+    }
     me({ req, em }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.session.userId) {
@@ -77,7 +80,7 @@ let UserResolver = class UserResolver {
             return user;
         });
     }
-    register(options, { em }) {
+    register(options, { em, req }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (options.username.length <= 2) {
                 return {
@@ -117,6 +120,8 @@ let UserResolver = class UserResolver {
                     };
                 }
             }
+            req.session.userId = user.id;
+            console.log('req.session' + JSON.stringify(req.session));
             return { user };
         });
     }
@@ -151,6 +156,13 @@ let UserResolver = class UserResolver {
         });
     }
 };
+__decorate([
+    type_graphql_1.Query(() => [User_1.User]),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "users", null);
 __decorate([
     type_graphql_1.Query(() => User_1.User, { nullable: true }),
     __param(0, type_graphql_1.Ctx()),
