@@ -73,6 +73,7 @@ let UserResolver = class UserResolver {
     }
     me({ req, em }) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('me req.session: ' + JSON.stringify(req.session));
             if (!req.session.userId) {
                 return null;
             }
@@ -103,14 +104,22 @@ let UserResolver = class UserResolver {
                 };
             }
             const hashedPassword = yield argon2_1.default.hash(options.password);
-            const user = em.create(User_1.User, {
-                username: options.username,
-                password: hashedPassword
-            });
+            let user;
             try {
-                yield em.persistAndFlush(user);
+                const result = yield em
+                    .createQueryBuilder(User_1.User)
+                    .getKnexQuery()
+                    .insert({
+                    username: options.username,
+                    password: hashedPassword,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                })
+                    .returning("*");
+                user = result[0];
             }
             catch (err) {
+                console.log('user register err' + err);
                 if (err.code === '23505' || err.detail.includes("already exists")) {
                     return {
                         errors: [{

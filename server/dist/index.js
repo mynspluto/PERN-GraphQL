@@ -32,11 +32,11 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const RedisStore = connect_redis_1.default(express_session_1.default);
     const redisClient = redis_1.default.createClient();
     app.use(cors_1.default({
-        origin: 'http://localhost:3000',
+        origin: "http://localhost:3000",
         credentials: true,
     }));
     app.use(express_session_1.default({
-        name: 'qqqid',
+        name: "qid",
         store: new RedisStore({
             client: redisClient,
             disableTouch: true,
@@ -48,13 +48,13 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             secure: false,
         },
         saveUninitialized: false,
-        secret: 'keyboard cat',
+        secret: "keyboard cat",
         resave: false,
     }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({
             resolvers: [hello_1.HelloResolver, post_1.PostResolver, user_1.UserResolver],
-            validate: false
+            validate: false,
         }),
         context: ({ req, res }) => ({ em: orm.em, req, res }),
     });
@@ -67,7 +67,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         console.log("server started on localhost:4000");
     });
 });
-main().catch(err => {
+main().catch((err) => {
     console.error(err);
 });
 //# sourceMappingURL=index.js.map
